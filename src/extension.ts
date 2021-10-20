@@ -4,7 +4,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("theiaology.editor", () => {
       //registerCustomEditorProvider("theiaology.editor");
-
       TheiaologyPanel.createOrShow(context.extensionUri);
     }),
     vscode.commands.registerCommand("theiaology.start", () => {
