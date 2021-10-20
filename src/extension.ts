@@ -122,9 +122,6 @@ class TheiaologyPanel {
     this._panel.webview.onDidReceiveMessage(
       (message) => {
         switch (message.command) {
-          case "focus":
-            this._panel.reveal(undefined, true);
-            return;
           case "alert":
             vscode.window.showErrorMessage(message.text);
             return;
@@ -137,6 +134,7 @@ class TheiaologyPanel {
 
   private async _update(isDev = false) {
     const url = isDev ? "http://localhost:10001" : "https://theiaology.com";
+
     this._panel.webview.html = `
         <!DOCTYPE html>
         <html lang="en">
@@ -148,10 +146,12 @@ class TheiaologyPanel {
                 html, body { padding: 0; margin: 0; width: 100%; height: 100%; overflow: none;}
 
             </style>
-            <script>window.addEventListener("mousedown", () => postMessage("focus"))</script>
+
         </head>
         <body>
-        <iframe src="${url}" width="100%" height="100%" frameborder="0" onclick="postMessage('focus')" ></iframe>
+
+        <iframe id="frame"src="${url}" width="100%" height="100%" frameborder="0" ></iframe>
+
         </body>
         </html>
     `;
