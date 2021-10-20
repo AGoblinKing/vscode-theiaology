@@ -37,7 +37,8 @@ function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
   return {
     // Enable javascript in the webview
     enableScripts: true,
-
+    // @ts-ignore
+    retainContextWhenHidden: true,
     // And restrict the webview to only loading content from our extension's `media` directory.
     localResourceRoots: [vscode.Uri.joinPath(extensionUri, "media")],
   };
@@ -61,14 +62,12 @@ class TheiaologyPanel {
   public isDev = false;
 
   public static createOrShow(extensionUri: vscode.Uri, isDev = false) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
+    const column = undefined;
 
     // If we already have a panel, show it.
     if (TheiaologyPanel.currentPanel) {
       TheiaologyPanel.currentPanel.isDev = isDev;
-      TheiaologyPanel.currentPanel._panel.reveal(column);
+      TheiaologyPanel.currentPanel._panel.reveal(column, true);
       return;
     }
 
@@ -111,6 +110,7 @@ class TheiaologyPanel {
     this._panel.onDidChangeViewState(
       (e) => {
         if (this._panel.visible) {
+          this._panel.webview.postMessage({ command: "showFocus" });
           this._update(this.isDev);
         }
       },
@@ -122,6 +122,9 @@ class TheiaologyPanel {
     this._panel.webview.onDidReceiveMessage(
       (message) => {
         switch (message.command) {
+          case "focus":
+            this._panel.reveal(undefined, true);
+            return;
           case "alert":
             vscode.window.showErrorMessage(message.text);
             return;
@@ -145,9 +148,10 @@ class TheiaologyPanel {
                 html, body { padding: 0; margin: 0; width: 100%; height: 100%; overflow: none;}
 
             </style>
+            <script>window.addEventListener("mousedown", () => postMessage("focus"))</script>
         </head>
         <body>
-        <iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>
+        <iframe src="${url}" width="100%" height="100%" frameborder="0" onclick="postMessage('focus')" ></iframe>
         </body>
         </html>
     `;
