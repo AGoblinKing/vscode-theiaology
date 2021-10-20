@@ -1,7 +1,7 @@
 {
 	"name": "vscode-theiaology",
 	"description": "Run theiaology and fate files within VS Code",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "CorporateEntity",
 	"private": true,
 	"license": "GPL3",
@@ -14,7 +14,9 @@
 		"vscode": "^1.47.0"
 	},
 	"categories": [
-		"Other"
+		"Other",
+		"Visualization",
+		"Programming Languages"
 	],
     "customEditors": [
         {
